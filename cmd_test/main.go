@@ -4,6 +4,7 @@ import (
 	"fmt"
 	geeorm "geeORM"
 	"geeORM/log"
+	"reflect"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -38,6 +39,20 @@ func serveSqlite() {
 	}
 }
 
+type User struct {
+	Id   int `geeorm:"PRIMARY KEY" json:"id"`
+	Name string
+	Age  int
+}
+
 func main() {
-	serveSqlite()
+	var u *User = &User{Id: 1, Name: "Tom", Age: 1}
+	t := reflect.Indirect(reflect.ValueOf(u)).Type()
+	fmt.Println(reflect.TypeOf(u))
+	for i := range t.NumField() {
+		fieldItem := t.Field(i)
+		fmt.Println(fieldItem.Name)
+		fmt.Println(fieldItem.Type)
+		fmt.Println(fieldItem.Tag.Get("geeorm"))
+	}
 }
