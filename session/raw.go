@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	dialect "geeORM/Dalect"
+	"geeORM/clause"
 	"geeORM/log"
 	"geeORM/schema"
 )
@@ -13,6 +14,7 @@ type Session struct {
 	db       *sql.DB
 	dialect  dialect.Dialect
 	refTable *schema.Schema
+	clause   clause.Clause
 	// 用于拼接生成SQL语句和SQL语句中占位符的对应值
 	sql     strings.Builder
 	sqlVars []interface{}
@@ -29,6 +31,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 // 清空会话
 func (s *Session) Clear() {
 	s.sql.Reset()
+	s.clause = clause.Clause{}
 	s.sqlVars = nil
 }
 
