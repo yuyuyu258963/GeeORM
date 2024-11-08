@@ -54,3 +54,14 @@ func Parse(v interface{}, d dialect.Dialect) *Schema {
 	}
 	return schema
 }
+
+// 默认使用的是指针传递
+// 将struct/对象 实例上的每个字段都值都返回
+func (schema *Schema) RecordValues(dest interface{}) []interface{} {
+	destValue := reflect.Indirect(reflect.ValueOf(dest))
+	vals := make([]interface{}, 0, len(schema.Fields))
+	for _, field := range schema.Fields {
+		vals = append(vals, destValue.FieldByName(field.Name).Interface())
+	}
+	return vals
+}
