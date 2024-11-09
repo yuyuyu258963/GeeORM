@@ -14,6 +14,9 @@ const (
 	LIMIT
 	WHERE
 	ORDERBY
+	UPDATE
+	DELETE
+	COUNT
 )
 
 // 用于拼接子句的生成
@@ -40,9 +43,9 @@ func (c *Clause) Build(orders ...Type) (string, []interface{}) {
 	for _, order := range orders {
 		if sql, ok := c.sql[order]; ok {
 			sqls = append(sqls, sql)
-			log.Info(c.sqlVars[order]...)
 			vars = append(vars, c.sqlVars[order]...)
 		}
 	}
+	log.Info(vars)
 	return strings.Join(sqls, " "), vars
 }
