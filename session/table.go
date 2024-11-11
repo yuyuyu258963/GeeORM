@@ -47,6 +47,7 @@ func (s *Session) DropTable() error {
 	return err
 }
 
+// 类似于HasTable这种定制化的session操作就需要借助dialect
 // check the table is created or not
 func (s *Session) HasTable() bool {
 	sql, values := s.dialect.TableExistSQL(s.RefTable().Name)

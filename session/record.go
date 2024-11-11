@@ -25,7 +25,7 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 	// generate all values for sql
 	sql, vars := s.clause.Build(clause.INSERT, clause.VALUES)
 	log.Info(sql, vars)
-	result, err := s.db.Exec(sql, vars...)
+	result, err := s.DB().Exec(sql, vars...)
 	if err != nil {
 		log.Error(err)
 		return 0, err
