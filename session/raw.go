@@ -12,6 +12,7 @@ import (
 
 type Session struct {
 	db       *sql.DB
+	tx       *sql.Tx
 	dialect  dialect.Dialect
 	refTable *schema.Schema
 	clause   clause.Clause
@@ -19,6 +20,14 @@ type Session struct {
 	sql     strings.Builder
 	sqlVars []interface{}
 }
+
+type CommonDB interface {
+	Query(query string, args ...interface{}) (*sql.Rows, error)
+	Exec(query string, args ...any) (sql.Result, error)
+	QueryRow(query string, args ...any) *sql.Row
+}
+
+var _ CommonDB = &sql.Tx{} // to insure *sql.Tx has implement the CommonDB interface
 
 // *sql.DB是通过sql.Open()方法连接数据库成功后返回的指针
 func New(db *sql.DB, dialect dialect.Dialect) *Session {
@@ -35,10 +44,14 @@ func (s *Session) Clear() {
 	s.sqlVars = nil
 }
 
-func (s *Session) DB() *sql.DB {
+func (s *Session) DB() CommonDB {
+	if s.tx != nil {
+		return s.tx
+	}
 	return s.db
 }
 
+// 设置原始的sql语句以及其中需要填充的值
 func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	s.sql.WriteString(sql)
 	s.sql.WriteString(" ")
